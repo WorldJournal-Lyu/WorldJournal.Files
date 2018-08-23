@@ -54,37 +54,18 @@ Function Move-Files() {
 
         ForEach($f in $File){
 
+            # Convert none pipe input (string path) into File Info Object
+            if(($f.GetType()).Name -ne 'FileInfo'){ $f = Get-Item $f }
+
             $moveFrom   = $f.FullName
-            $moveTo     = ($f.FullName).Replace($From, $To)
+            $moveTo     = ($f.FullName) -Replace [regex]::Escape($From), $To
             $fromParent = (Split-Path ($moveFrom))
             $toParent   = (Split-Path ($moveTo))
             $obj        = New-Object -TypeName PSObject
 
-            if(!(Test-Path $moveFrom -PathType Container)){
+            if(Test-Path $moveFrom -PathType Container){
 
-                if(!(Test-Path $toParent)){
-                    New-Item $toParent -ItemType Directory | Out-Null
-                }
-
-                $obj | Add-Member -MemberType NoteProperty -Name FileType ¡Vvalue "File"
-                $obj | Add-Member -MemberType NoteProperty -Name Verb ¡Vvalue "MOVE"
-                $obj | Add-Member -MemberType NoteProperty -Name MoveFrom ¡Vvalue $moveFrom
-                $obj | Add-Member -MemberType NoteProperty -Name MoveTo ¡Vvalue $moveTo
-                $obj | Add-Member -MemberType NoteProperty -Name Noun ¡Vvalue $moveTo
-
-                try{
-
-                    Move-Item $moveFrom $moveTo -Force -ErrorAction Stop
-                    $obj | Add-Member -MemberType NoteProperty -Name Status ¡Vvalue "Good"
-                
-                }catch{
-                
-                    $obj | Add-Member -MemberType NoteProperty -Name Status ¡Vvalue "Bad"
-                    $obj | Add-Member -MemberType NoteProperty -Name Exception ¡Vvalue $_.Exception.Message
-                }
-
-
-            }else{
+                # Item is directory
 
                 $obj | Add-Member -MemberType NoteProperty -Name FileType ¡Vvalue "Directory"
                 $obj | Add-Member -MemberType NoteProperty -Name Verb ¡Vvalue "REMOVE"
@@ -102,6 +83,32 @@ Function Move-Files() {
                     $obj | Add-Member -MemberType NoteProperty -Name Status ¡Vvalue "Bad"
                     $obj | Add-Member -MemberType NoteProperty -Name Exception ¡Vvalue $_.Exception.Message
                 
+                }
+
+
+            }else{
+
+                # Item is not directory
+
+                $obj | Add-Member -MemberType NoteProperty -Name FileType ¡Vvalue "File"
+                $obj | Add-Member -MemberType NoteProperty -Name Verb ¡Vvalue "MOVE"
+                $obj | Add-Member -MemberType NoteProperty -Name MoveFrom ¡Vvalue $moveFrom
+                $obj | Add-Member -MemberType NoteProperty -Name MoveTo ¡Vvalue $moveTo
+                $obj | Add-Member -MemberType NoteProperty -Name Noun ¡Vvalue $moveTo
+
+                try{
+
+                    if(!(Test-Path $toParent)){
+                        New-Item $toParent -ItemType Directory | Out-Null
+                    }
+
+                    Move-Item $moveFrom $moveTo -Force -ErrorAction Stop
+                    $obj | Add-Member -MemberType NoteProperty -Name Status ¡Vvalue "Good"
+                
+                }catch{
+                
+                    $obj | Add-Member -MemberType NoteProperty -Name Status ¡Vvalue "Bad"
+                    $obj | Add-Member -MemberType NoteProperty -Name Exception ¡Vvalue $_.Exception.Message
                 }
 
             }
@@ -134,36 +141,14 @@ Function Copy-Files() {
         ForEach($f in $File){
 
             $copyFrom   = $f.FullName
-            $copyTo     = ($f.FullName).Replace($From, $To)
+            $copyTo     = ($f.FullName) -Replace [regex]::Escape($From), $To
             $fromParent = (Split-Path ($copyFrom))
             $toParent   = (Split-Path ($copyTo))
             $obj        = New-Object -TypeName PSObject
 
-            if(!(Test-Path $copyFrom -PathType Container)){
+            if(Test-Path $copyFrom -PathType Container){
 
-                #if(!(Test-Path $toParent)){
-                #    New-Item $toParent -ItemType Directory | Out-Null
-                #}
-
-                $obj | Add-Member -MemberType NoteProperty -Name FileType ¡Vvalue "File"
-                $obj | Add-Member -MemberType NoteProperty -Name Verb ¡Vvalue "COPY"
-                $obj | Add-Member -MemberType NoteProperty -Name CopyFrom ¡Vvalue $copyFrom
-                $obj | Add-Member -MemberType NoteProperty -Name CopyTo ¡Vvalue $copyTo
-                $obj | Add-Member -MemberType NoteProperty -Name Noun ¡Vvalue $copyTo
-
-                try{
-
-                    Copy-Item $copyFrom $copyTo -Force -ErrorAction Stop
-                    $obj | Add-Member -MemberType NoteProperty -Name Status ¡Vvalue "Good"
-                
-                }catch{
-                
-                    $obj | Add-Member -MemberType NoteProperty -Name Status ¡Vvalue "Bad"
-                    $obj | Add-Member -MemberType NoteProperty -Name Exception ¡Vvalue $_.Exception.Message
-                }
-
-
-            }else{
+                # Item is directory
 
                 $obj | Add-Member -MemberType NoteProperty -Name FileType ¡Vvalue "Directory"
                 $obj | Add-Member -MemberType NoteProperty -Name Verb ¡Vvalue "NEW"
@@ -181,6 +166,28 @@ Function Copy-Files() {
                     $obj | Add-Member -MemberType NoteProperty -Name Status ¡Vvalue "Bad"
                     $obj | Add-Member -MemberType NoteProperty -Name Exception ¡Vvalue $_.Exception.Message
                 
+                }
+
+
+            }else{
+
+                # Item is not directory
+
+                $obj | Add-Member -MemberType NoteProperty -Name FileType ¡Vvalue "File"
+                $obj | Add-Member -MemberType NoteProperty -Name Verb ¡Vvalue "COPY"
+                $obj | Add-Member -MemberType NoteProperty -Name CopyFrom ¡Vvalue $copyFrom
+                $obj | Add-Member -MemberType NoteProperty -Name CopyTo ¡Vvalue $copyTo
+                $obj | Add-Member -MemberType NoteProperty -Name Noun ¡Vvalue $copyTo
+
+                try{
+
+                    Copy-Item $copyFrom $copyTo -Force -ErrorAction Stop
+                    $obj | Add-Member -MemberType NoteProperty -Name Status ¡Vvalue "Good"
+                
+                }catch{
+                
+                    $obj | Add-Member -MemberType NoteProperty -Name Status ¡Vvalue "Bad"
+                    $obj | Add-Member -MemberType NoteProperty -Name Exception ¡Vvalue $_.Exception.Message
                 }
 
             }
