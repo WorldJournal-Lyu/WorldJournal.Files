@@ -21,12 +21,12 @@ function Get-ChildItemPlus(){
 
                 if(Test-Path $_.FullName -PathType Container){
 
-                    Write-Output (Get-Item $_.FullName)
+                    Write-Output -LiteralPath (Get-Item $_.FullName)
                     Get-ChildItemPlus $_.FullName
 
                 }else{
 
-                    Write-Output (Get-Item $_.FullName)
+                    Write-Output -LiteralPath (Get-Item $_.FullName)
 
                 }
             }
