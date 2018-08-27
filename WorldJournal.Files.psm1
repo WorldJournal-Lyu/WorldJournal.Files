@@ -17,16 +17,16 @@ function Get-ChildItemPlus(){
 
         ForEach($p in $Path){
 
-            Get-ChildItem -LiteralPath $p | Sort-Object | ForEach-Object{
+            Get-ChildItem $p | Sort-Object | ForEach-Object{
 
-                if(Test-Path -LiteralPath $_.FullName -PathType Container){
+                if(Test-Path $_.FullName -PathType Container){
 
-                    Write-Output (Get-Item -LiteralPath $_.FullName)
+                    Write-Output (Get-Item $_.FullName)
                     Get-ChildItemPlus $_.FullName
 
                 }else{
 
-                    Write-Output (Get-Item -LiteralPath $_.FullName)
+                    Write-Output (Get-Item $_.FullName)
 
                 }
             }
