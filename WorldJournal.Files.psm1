@@ -201,3 +201,68 @@ Function Copy-Files() {
     End{ }
 
 }
+
+
+
+Function Delete-Thumbs(){
+
+    Param (
+
+        [CmdletBinding()]
+        [Parameter(Mandatory = $true)][string]$Path
+
+    )
+
+    Begin{ }
+
+    Process{
+
+        if(Test-Path $Path){
+
+            Get-ChildItem $Path -Include Thumbs.db -Recurse -Force | ForEach-Object{
+
+                $_.Attributes = [System.IO.FileAttributes]::Normal
+
+                $obj = New-Object -TypeName PSObject
+                $obj | Add-Member -MemberType NoteProperty -Name Verb ¡Vvalue "REMOVE"
+                $obj | Add-Member -MemberType NoteProperty -Name Noun ¡Vvalue $_.FullName
+
+                try{
+
+                    Remove-Item $_.FullName -Force -ErrorAction Stop
+                    $obj | Add-Member -MemberType NoteProperty -Name Status ¡Vvalue "Good"
+
+                }catch{
+
+                    $obj | Add-Member -MemberType NoteProperty -Name Status ¡Vvalue "Bad"
+                    $obj | Add-Member -MemberType NoteProperty -Name Exception ¡Vvalue $_.Exception.Message
+
+                }
+
+                Write-Output $obj
+        
+            }
+
+            $obj = New-Object -TypeName PSObject
+            $obj | Add-Member -MemberType NoteProperty -Name Verb ¡Vvalue "DELETE-THUMBS"
+            $obj | Add-Member -MemberType NoteProperty -Name Noun ¡Vvalue $Path
+            $obj | Add-Member -MemberType NoteProperty -Name Status ¡Vvalue "Good"
+
+            Write-Output $obj
+
+        }else{
+
+            $obj = New-Object -TypeName PSObject
+            $obj | Add-Member -MemberType NoteProperty -Name Verb ¡Vvalue "DELETE-THUMBS"
+            $obj | Add-Member -MemberType NoteProperty -Name Noun ¡Vvalue $Path
+            $obj | Add-Member -MemberType NoteProperty -Name Status ¡Vvalue "Bad"
+            $obj | Add-Member -MemberType NoteProperty -Name Exception ¡Vvalue "Path does not exist"
+
+            Write-Output $obj
+
+        }
+
+    }
+
+    End{ }
+}
