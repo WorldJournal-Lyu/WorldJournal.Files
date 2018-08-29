@@ -15,7 +15,6 @@ function Get-ChildItemPlus(){
     Begin{}
     Process{
 
-
         ForEach($p in $Path){
 
             if( Test-Path $p ){
