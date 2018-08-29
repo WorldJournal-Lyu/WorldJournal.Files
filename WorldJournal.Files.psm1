@@ -15,22 +15,25 @@ function Get-ChildItemPlus(){
     Begin{}
     Process{
 
+
         ForEach($p in $Path){
 
-            Get-ChildItem $p | Sort-Object | ForEach-Object{
+            if( Test-Path $p ){
 
-                if(Test-Path $_.FullName -PathType Container){
+                Get-ChildItem $p | Sort-Object | ForEach-Object{
 
-                    Write-Output (Get-Item $_.FullName)
-                    Get-ChildItemPlus $_.FullName
+                    if(Test-Path $_.FullName -PathType Container){
 
-                }else{
+                        Write-Output (Get-Item $_.FullName)
+                        Get-ChildItemPlus $_.FullName
 
-                    Write-Output (Get-Item $_.FullName)
+                    }else{
 
+                        Write-Output (Get-Item $_.FullName)
+
+                    }
                 }
-            }
-        
+            }        
         }
     
     }
@@ -255,7 +258,7 @@ Function Delete-Thumbs(){
             $obj = New-Object -TypeName PSObject
             $obj | Add-Member -MemberType NoteProperty -Name Verb ¡Vvalue "DELETE-THUMBS"
             $obj | Add-Member -MemberType NoteProperty -Name Noun ¡Vvalue $Path
-            $obj | Add-Member -MemberType NoteProperty -Name Status ¡Vvalue "Bad"
+            $obj | Add-Member -MemberType NoteProperty -Name Status ¡Vvalue "Warning"
             $obj | Add-Member -MemberType NoteProperty -Name Exception ¡Vvalue "Path does not exist"
 
             Write-Output $obj
