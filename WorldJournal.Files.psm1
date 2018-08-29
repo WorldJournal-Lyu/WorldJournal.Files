@@ -34,7 +34,6 @@ function Get-ChildItemPlus(){
                 }
             }        
         }
-    
     }
     End{}
 }
