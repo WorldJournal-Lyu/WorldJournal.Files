@@ -55,9 +55,6 @@ Function Move-Files() {
 
         ForEach($f in $File){
 
-            # Convert none pipe input (string path) into File Info Object
-            if(($f.GetType()).Name -ne 'FileInfo'){ $f = Get-Item $f }
-
             $moveFrom   = $f.FullName
             $moveTo     = ($f.FullName) -Replace [regex]::Escape($From), $To
             $fromParent = (Split-Path ($moveFrom))
