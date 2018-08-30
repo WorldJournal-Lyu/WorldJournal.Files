@@ -66,12 +66,16 @@ Function Move-Files() {
                 # Item is directory
 
                 $obj | Add-Member -MemberType NoteProperty -Name FileType ¡Vvalue "Directory"
-                $obj | Add-Member -MemberType NoteProperty -Name Verb ¡Vvalue "REMOVE"
+                $obj | Add-Member -MemberType NoteProperty -Name Verb ¡Vvalue "MOVE FOLDER"
                 $obj | Add-Member -MemberType NoteProperty -Name MoveFrom ¡Vvalue $moveFrom
                 $obj | Add-Member -MemberType NoteProperty -Name MoveTo ¡Vvalue $moveTo
                 $obj | Add-Member -MemberType NoteProperty -Name Noun ¡Vvalue $moveTo
 
                 try{
+
+                    if(!(Test-Path $moveTo)){
+                        New-Item $moveTo -ItemType Directory | Out-Null
+                    }
 
                     Remove-Item -Path $moveFrom -Force -Recurse -ErrorAction Stop
                     $obj | Add-Member -MemberType NoteProperty -Name Status ¡Vvalue "Good"
@@ -89,7 +93,7 @@ Function Move-Files() {
                 # Item is not directory
 
                 $obj | Add-Member -MemberType NoteProperty -Name FileType ¡Vvalue "File"
-                $obj | Add-Member -MemberType NoteProperty -Name Verb ¡Vvalue "MOVE"
+                $obj | Add-Member -MemberType NoteProperty -Name Verb ¡Vvalue "MOVE FILE"
                 $obj | Add-Member -MemberType NoteProperty -Name MoveFrom ¡Vvalue $moveFrom
                 $obj | Add-Member -MemberType NoteProperty -Name MoveTo ¡Vvalue $moveTo
                 $obj | Add-Member -MemberType NoteProperty -Name Noun ¡Vvalue $moveTo
